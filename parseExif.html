@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>Parse Exif</title>
+    </head>
+    <body>
+        <input type="file" accept="image/*" onchange="picChange(event)"/>
+        <p>
+        Photo:
+        </p>
+        <div id="tt">
+        </div>
+        <script type="text/javascript" charset="utf-8">
+            var myWorker = new Worker("worker.js");
+            var result = document.querySelector("#tt");
+            function picChange(evt){ 
+                //get files captured through input
+                var fileInput = evt.target.files
+                if(fileInput.length>0){
+                //get the file
+                }
+                var file = fileInput[0];
+                var filePart;
+                if (file.slice) {
+                    filePart = file.slice(0, 1024 * 128);
+                }
+                var reader = new FileReader();
+                reader.onload = function() {
+                    myWorker.postMessage({
+                        binary_string: this.result
+                    });
+                    console.log("Message posted to worker")
+                };
+                reader.readAsBinaryString(filePart);
+            }
+
+            myWorker.onmessage = function (e) {
+                result.textContent = JSON.stringify(e.data.tags);
+                console.log("Message received from worker")
+            }
+        </script>
+    </body>
+
+    </body>
+</html>
