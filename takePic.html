@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>Take Picture</title>
+        <style type="text/css" media="all">
+        body, html {font-family:sans-serif;}
+        div {width:80%; margin:auto; background-color:#ffffff; padding:5%; border:2px solid #990066; text-align:center; border-radius:10px;}
+        canvas {padding:5%; border:2px solid #330000; background-color:#660000; border-radius:10px;}
+        </style>
+    </head>
+    <body>
+        <input type="file" accept="image/*" onchange="picChange(event)"/>
+        <p>
+        Photo:
+        </p>
+        <div id="tt">
+        </div>
+        <canvas id="canvas" width="500" height="400">
+        </canvas>
+        <a href="javascript:void(0)" id="convertBtn">Convert to image</a>
+        <a href="javascript:void(0)" id="rotateBtn">Rotate image</a>
+
+        <script src="http://zeptojs.com/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+        <script type="text/javascript" charset="utf-8">
+            var myWorker = new Worker("worker.js");
+            var canvasOffset = $("#canvas").offset();
+            var offsetX = canvasOffset.left;
+            var offsetY = canvasOffset.top;
+            var pi2 = Math.PI * 2;
+            var resizerRadius = 8;
+            var imageX = 0;
+            var imageY = 0;
+            var imageWidth, imageHeight, imageRight, imageBottom;
+            var draggingImage = false;
+            var startX;
+            var startY;
+
+
+            var rotate = ""
+            var canvas= document.getElementById("canvas");
+            var ctx = canvas.getContext("2d");
+            var img = new Image();
+
+            function picChange(evt) { 
+                //get files captured through input
+                var fileInput = evt.target.files
+                if(fileInput.length>0){
+                //get the file
+                }
+
+                var file = fileInput[0];
+                var filePart;
+                if (file.slice) {
+                    filePart = file.slice(0, 1024 * 128);
+                }
+
+                //get canvas
+                //create image
+                img.onload = function(){
+                    imageWidth = img.width;
+                    imageHeight = img.height;
+                    imageRight = imageX + imageWidth;
+                    imageBottom = imageY + imageHeight
+                    draw(true, false);
+                };
+
+                var reader = new FileReader();
+                reader.onload = (function(aImg) {
+                    return function(e) {
+                        aImg.src = e.target.result;
+                    };
+                })(img);
+                reader.readAsDataURL(file);
+
+                var filePartReader = new FileReader();
+                filePartReader.onload = function() {
+                    myWorker.postMessage({
+                        binary_string: this.result
+                    });
+                    console.log("Message posted to worker")
+                };
+                filePartReader.readAsBinaryString(filePart);
+
+                myWorker.onmessage = function (e) {
+                    var tags = e.data.tags;
+                    console.log("eeeewww:", tags.Orientation)
+                    if (tags.Orientation === 6) {
+                        angle += 90;
+                    }
+                    draw(true, false);
+                }
+            }
+
+
+            function rotateImage(degree) {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+
+                // save the unrotated context of the canvas so we can restore it later
+                // the alternative is to untranslate & unrotate after drawing
+                ctx.save();
+                console.log(img.width, img.height, imageX, imageY, imageWidth, imageHeight)
+
+                // move to the center of the canvas
+                ctx.translate(canvas.width/2,canvas.height/2);
+                console.log(degree)
+                console.log(canvas.width/2,canvas.height/2)
+
+                // rotate the canvas to the specified degrees
+                ctx.rotate(degree*Math.PI/180);
+
+                // draw the image
+                // since the context is rotated, the image will be rotated also
+                ctx.drawImage(img, 0, 0, img.width, img.height, imageX, imageY, imageWidth, imageHeight);
+
+                // we’re done with the rotating so restore the unrotated context
+                ctx.restore();
+            }
+
+            function draw(withAnchors, withBorders) {
+
+                // clear the canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.save();
+
+                // draw the image
+                ctx.translate(canvas.width/2,canvas.height/2);
+                ctx.rotate(angle*Math.PI/180);
+                ctx.drawImage(img, 0, 0, img.width, img.height, imageX, imageY, imageWidth, imageHeight);
+                ctx.restore();
+            }
+
+
+            function handleMouseDown(e) {
+                var touchPoint = e.targetTouches[0];
+                startX = parseInt(touchPoint.clientX - offsetX);
+                startY = parseInt(touchPoint.clientY - offsetY);
+            }
+
+            function handleMouseMove(e) {
+                var touchPoint = e.targetTouches[0];
+                    imageClick = false;
+
+                    mouseX = parseInt(touchPoint.clientX - offsetX);
+                    mouseY = parseInt(touchPoint.clientY - offsetY);
+                    // move the image by the amount of the latest drag
+                    var dx = mouseX - startX;
+                    var dy = mouseY - startY;
+                    var temptX = imageX;
+                    var temptY = imageY;
+                    switch ((angle / 90) % 4) {
+                        case 0:
+                            imageX += dx;
+                            imageY += dy;
+                            break;
+                        case 1:
+                            imageY -= dx;
+                            imageX += dy;
+                            break;
+                        case 2:
+                            imageX -= dx;
+                            imageY -= dy;
+                            break;
+                        case 3:
+                            imageY += dx;
+                            imageX -= dy;
+                            break;
+                    }
+                    imageRight += dx;
+                    imageBottom += dy;
+                    // reset the startXY for next time
+                    startX = mouseX;
+                    startY = mouseY;
+
+                    // redraw the image with border
+                    draw(false, true);
+            }
+
+            var draggableCanvas = document.getElementById('canvas');
+            draggableCanvas.addEventListener('touchmove', function (e) {
+                handleMouseMove(e);
+            });
+
+            draggableCanvas.addEventListener('touchstart', function (e) {
+                handleMouseDown(e);
+            });
+
+            $('#convertBtn').on("click", function () {
+                var imgUrl = document.getElementById("canvas").toDataURL("image/png");
+
+                var img = new Image();
+                img.onload = function () {
+                    $('body').append(img)
+                }
+                img.src = imgUrl;
+
+            });
+
+            var angle = 0;
+            $('#rotateBtn').on("click", function () {
+                    angle += 90;
+                    rotateImage(angle);
+            });
+
+        </script>
+    </body>
+</html>
