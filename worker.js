@@ -329,10 +329,8 @@ var StringValues = {
     var offset;
     var length;
 
-    console.log(333);
     console.log("byteAt0:" + getByteAt(0));
     console.log("byteAt1:" + getByteAt(1));
-    console.log(getByteAt(0) != 0xFF || getByteAt(1) != 0xD8);
 
     var exifTags;
     if (getByteAt(0) != 0xFF || getByteAt(1) != 0xD8) {
@@ -340,17 +338,12 @@ var StringValues = {
     } else {
         offset = 2;
         length = dataview.byteLength;
-        console.log("length:", length);
         while(offset < length) {
             var marker = getByteAt(offset + 1);
-            console.group();
-            console.log("offset:", offset + 1);
-            console.log("marker before:", getByteAt(offset));
             console.log("marker:", marker);
-            console.log("length:", getShortAt(offset + 2));
-            console.groupEnd();
             if (marker == 225) {
                 exifTags = readExifData(offset + 4, getShortAt(offset + 2) - 2);
+                console.log("exifTags:", exifTags);
                 break;
             } else if (marker == 224) {
                 offset = 20;
@@ -387,11 +380,11 @@ var StringValues = {
         }
 
         var tags = readTags(TIFFOffset, TIFFOffset + 8, TiffTags, littleEndian)
-        console.log(tags);
         if (tags.ExifIFDPointer) {
             var exifTagsExtr = readTags(TIFFOffset, TIFFOffset + tags.ExifIFDPointer, Tags, littleEndian)
             console.log(exifTagsExtr);
         }
+
         return {
             tags: tags,
             exifTagsExtr: exifTagsExtr

@@ -2,90 +2,43 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
         <title>Take Picture</title>
         <style type="text/css" media="all">
-        canvas {padding:5%; border:2px solid #330000; background-color:#660000; border-radius:10px;}
+        canvas {padding:5%; border:2px solid #330000; background-color:#333; border-radius:10px;}
         </style>
     </head>
     <body>
-        <input type="file" accept="image/*" onchange="picChange(event)" id="uploadBtn"/>
+        <input type="file" accept="image/*"  id="uploadBtn"/>
         <p>
         Photo:
         </p>
         <div id="tt">
         </div>
-        <canvas id="canvas" width="500" height="400">
+        <canvas id="canvas" width="250" height="250">
         </canvas>
         <a href="javascript:void(0)" id="convertBtn">Convert to image</a>
         <a href="javascript:void(0)" id="rotateBtn">Rotate image</a>
+        <a href="javascript:void(0)" id="clipBtn">Clip image</a>
 
         <script src="utils.js" type="text/javascript" charset="utf-8"></script>
         <script src="init.js" type="text/javascript" charset="utf-8"></script>
+        <script src="exif.js" type="text/javascript" charset="utf-8"></script>
+        <script src="clip.js" type="text/javascript" charset="utf-8"></script>
         <script src="draw.js" type="text/javascript" charset="utf-8"></script>
         <script src="drag.js" type="text/javascript" charset="utf-8"></script>
         <script src="rotate.js" type="text/javascript" charset="utf-8"></script>
         <script src="resize.js" type="text/javascript" charset="utf-8"></script>
         <script type="text/javascript" charset="utf-8">
-            shawn.config.canvas = document.getElementById('canvas');
-            shawn.config.context = shawn.config.canvas.getContext("2D")
             var uploadBtn = document.getElementById("uploadBtn")
             uploadBtn.addEventListener("change", function (e) {
                 var files = e.target.files;
                 shawn.drawImage(files)
             });
 
-            function picChange(evt) { 
-                //get files captured through input
-                var fileInput = evt.target.files
-                if(fileInput.length>0){
-                //get the file
-                }
-
-                var file = fileInput[0];
-                var filePart;
-                if (file.slice) {
-                    filePart = file.slice(0, 1024 * 128);
-                }
-
-                //get canvas
-                //create image
-                img.onload = function(){
-                    imageWidth = img.width;
-                    imageHeight = img.height;
-                    imageRight = imageX + imageWidth;
-                    imageBottom = imageY + imageHeight
-                    draw(true, false);
-                };
-
-                var reader = new FileReader();
-                reader.onload = (function(aImg) {
-                    return function(e) {
-                        aImg.src = e.target.result;
-                    };
-                })(img);
-                reader.readAsDataURL(file);
-
-                var filePartReader = new FileReader();
-                filePartReader.onload = function() {
-                    console.log("Message posted to worker")
-                };
-                filePartReader.readAsBinaryString(filePart);
-            }
-
-           $('#convertBtn').on("click", function () {
-                var imgUrl = document.getElementById("canvas").toDataURL("image/png");
-
-                var img = new Image();
-                img.onload = function () {
-                    $('body').append(img)
-                }
-                img.src = imgUrl;
-            });
-
-            $('#rotateBtn').on("click", function () {
-                    angle += 90;
-                    rotateImage(angle);
+            var clipBtn = document.getElementById("clipBtn");
+            clipBtn.addEventListener("click", function (e) {
+                shawn.drawClipRect();
             });
 
         </script>

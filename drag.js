@@ -1,13 +1,22 @@
 (function () {
     var startX;
     var startY;
-    var draggableCanvas = document.getElementById('canvas');
+    var canvas = shawn.config.canvas;
+    var ctx = shawn.config.context;
+    var offsetX = 0;
+    var offsetY = 0;
 
-    draggableCanvas.addEventListener('touchmove', function (e) {
+    shawn.config.drag = {
+        angle: 0,
+        imageX: 0,
+        imageY: 0
+    }
+
+    canvas.addEventListener('touchmove', function (e) {
         handleMouseMove(e);
     });
 
-    draggableCanvas.addEventListener('touchstart', function (e) {
+    canvas.addEventListener('touchstart', function (e) {
         handleMouseDown(e);
     });
 
@@ -18,42 +27,40 @@
     }
 
     function handleMouseMove(e) {
+        var dragConfig = shawn.config.drag;
         var touchPoint = e.targetTouches[0];
             imageClick = false;
 
-            mouseX = parseInt(touchPoint.clientX - offsetX);
-            mouseY = parseInt(touchPoint.clientY - offsetY);
-            // move the image by the amount of the latest drag
-            var dx = mouseX - startX;
-            var dy = mouseY - startY;
-            var temptX = imageX;
-            var temptY = imageY;
-            switch ((angle / 90) % 4) {
-                case 0:
-                    imageX += dx;
-                    imageY += dy;
-                    break;
-                case 1:
-                    imageY -= dx;
-                    imageX += dy;
-                    break;
-                case 2:
-                    imageX -= dx;
-                    imageY -= dy;
-                    break;
-                case 3:
-                    imageY += dx;
-                    imageX -= dy;
-                    break;
-            }
-            imageRight += dx;
-            imageBottom += dy;
-            // reset the startXY for next time
-            startX = mouseX;
-            startY = mouseY;
+        var mouseX = parseInt(touchPoint.clientX - offsetX);
+        var mouseY = parseInt(touchPoint.clientY - offsetY);
+        // move the image by the amount of the latest drag
+        var dx = mouseX - startX;
+        var dy = mouseY - startY;
 
-            // redraw the image with border
-            draw(false, true);
+        switch ((dragConfig.angle / 90) % 4) {
+            case 0:
+                dragConfig.imageX += dx;
+                dragConfig.imageY += dy;
+                break;
+            case 1:
+                dragConfig.imageY -= dx;
+                dragConfig.imageX += dy;
+                break;
+            case 2:
+                dragConfig.imageX -= dx;
+                dragConfig.imageY -= dy;
+                break;
+            case 3:
+                dragConfig.imageY += dx;
+                dragConfig.imageX -= dy;
+                break;
+        }
+        // reset the startXY for next time
+        startX = mouseX;
+        startY = mouseY;
+
+        // redraw the image with border
+        shawn.draw();
     }
 
 
