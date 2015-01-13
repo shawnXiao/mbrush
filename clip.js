@@ -1,5 +1,6 @@
 ;(function () {
     shawn.drawClipRect = drawClipRect;
+
     function drawClipRect() {
         var canvas = shawn.config.canvas;
         var ctx = shawn.config.context;

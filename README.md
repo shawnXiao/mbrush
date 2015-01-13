@@ -42,6 +42,6 @@ reader.readAsDataURL();
 * 由于我们在选取图片的时候，要判断图片拍摄的方向，所以需要读取图片的 EXIF 信息。图片的 EXIF 信息是存在图片文件的前 128kb 的内容中，所以我们要将图片的前 128kb 信息通过
 readAsBinaryString 的方式读取出来，然后再根据 EXIF 的规范去进行文件解析。
 
-#### Blob
 #### ArrayBuffer
 #### DataView
+#### webworker

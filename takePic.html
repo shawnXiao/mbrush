@@ -15,8 +15,7 @@
         </p>
         <div id="tt">
         </div>
-        <canvas id="canvas" width="250" height="250">
-        </canvas>
+        <canvas id="canvas" width="250" height="250"></canvas>
         <a href="javascript:void(0)" id="convertBtn">Convert to image</a>
         <a href="javascript:void(0)" id="rotateBtn">Rotate image</a>
         <a href="javascript:void(0)" id="clipBtn">Clip image</a>
@@ -29,6 +28,7 @@
         <script src="drag.js" type="text/javascript" charset="utf-8"></script>
         <script src="rotate.js" type="text/javascript" charset="utf-8"></script>
         <script src="resize.js" type="text/javascript" charset="utf-8"></script>
+
         <script type="text/javascript" charset="utf-8">
             var uploadBtn = document.getElementById("uploadBtn")
             uploadBtn.addEventListener("change", function (e) {
@@ -40,7 +40,7 @@
             clipBtn.addEventListener("click", function (e) {
                 shawn.drawClipRect();
             });
-
         </script>
+
     </body>
 </html>
