@@ -42,6 +42,37 @@ reader.readAsDataURL();
 * 由于我们在选取图片的时候，要判断图片拍摄的方向，所以需要读取图片的 EXIF 信息。图片的 EXIF 信息是存在图片文件的前 128kb 的内容中，所以我们要将图片的前 128kb 信息通过
 readAsBinaryString 的方式读取出来，然后再根据 EXIF 的规范去进行文件解析。
 
-#### ArrayBuffer
-#### DataView
-#### webworker
+#### ArrayBuffer, TypedArray, DataView
+[ArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer) 用来保存二进制数据。当我们 new 一个 ArrayBuffer 时，相当于
+是创建了数据的二级制版本，然后通过使用这个 buffer 来获取其他格式的数据，例如:
+
+```c
+    struct someStruct {
+        unsigned long id;
+        char username[16];
+        float amountDue;
+    }
+```
+
+我们可以通过下面的方式来进行访问这个结构体中的不同内容：
+
+```javascript
+    var buffer = new ArrayBuffer(24);
+    // ... read the data into the buffer ...
+    var idView = new Uint32Array(buffer, 0, 1);
+    var usernameView = new Uint8Array(buffer, 4, 16);
+    var amountDueView = new Float32Array(buffer, 20, 1);
+```
+再来看我们在这个项目中为什么会用到 ArrayBuffer, 因为在上面我们提到过我们需要读取图片的 EXIF 信息，而图片的 EXIF 信息是二进制信息，根据 EXIF 的规范里面有很多种数据，
+所以在这里我们
+
+```javascript
+    var arraybuffer = new ArrayBuffer(binary_string.length);
+    var dataview = new DataView(buffer);
+```
+
+#### Webworker
+#### Touch Event
+#### Canvas - Basic
+#### Canvas - Image
+
