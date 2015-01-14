@@ -10,9 +10,7 @@
         var dragConfig = shawn.config.drag;
 
         // clear the canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.save();
-
         // draw the image
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(shawn.config.drag.angle * Math.PI / 180);
