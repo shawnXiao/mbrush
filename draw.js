@@ -24,6 +24,7 @@
             ctx.drawImage(img, 0, 0, img.width, img.height,  dragConfig.imageX, dragConfig.imageY, canvas.width, canvas.height);
         }
         ctx.restore();
+
     }
 
     function getFileImageItem(files) {
