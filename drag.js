@@ -104,6 +104,7 @@
                 dragOffsetX -= dy;
                 break;
         }
+
         // reset the startXY for next time
         startX = mouseX;
         startY = mouseY;

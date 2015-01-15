@@ -4,17 +4,25 @@
 
     var img;
     var dataUrl;
-    function draw(init) {
+    function draw(isClip) {
         var canvas = shawn.config.canvas;
         var ctx = shawn.config.context;
+        var resizeWidthRatio = img.width / canvas.width;
+        var resizeHeightRatio = img.height / canvas.height;
+
         var dragConfig = shawn.config.drag;
+        var clipRectCoordinate = shawn.config.clipRectCoordinate;
 
         // clear the canvas
         ctx.save();
         // draw the image
-        ctx.translate(canvas.width / 2, canvas.height / 2);
+        //ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(shawn.config.drag.angle * Math.PI / 180);
-        ctx.drawImage(img, 0, 0, img.width, img.height,  dragConfig.imageX, dragConfig.imageY, img.width, img.height);
+        if (isClip) {
+            ctx.drawImage(img, clipRectCoordinate.offsetX * resizeWidthRatio, clipRectCoordinate.offsetY * resizeHeightRatio, clipRectCoordinate.width * resizeWidthRatio, clipRectCoordinate.height * resizeHeightRatio,  dragConfig.imageX, dragConfig.imageY, canvas.width, canvas.height);
+        } else {
+            ctx.drawImage(img, 0, 0, img.width, img.height,  dragConfig.imageX, dragConfig.imageY, canvas.width, canvas.height);
+        }
         ctx.restore();
     }
 

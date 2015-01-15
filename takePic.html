@@ -19,6 +19,7 @@
         <a href="javascript:void(0)" id="convertBtn">Convert to image</a>
         <a href="javascript:void(0)" id="rotateBtn">Rotate image</a>
         <a href="javascript:void(0)" id="clipBtn">Clip image</a>
+        <a href="javascript:void(0)" id="clipConfirmBtn">Clip Confirm Image</a>
 
         <script src="utils.js" type="text/javascript" charset="utf-8"></script>
         <script src="init.js" type="text/javascript" charset="utf-8"></script>
@@ -41,6 +42,11 @@
                 shawn.config.isClip = true;
                 shawn.drawClipRect();
             });
+            var clipConfirmBtn = document.getElementById("clipConfirmBtn")
+            clipConfirmBtn.addEventListener("click", function (e) {
+                shawn.draw(true);
+            });
+
         </script>
 
     </body>
