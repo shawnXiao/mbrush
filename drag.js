@@ -28,16 +28,21 @@
     }
 
     function isTouchInClipRec() {
+        if (!shawn.config.isClip) {
+            return;
+        }
+
         var clipRectCoordinate = shawn.config.clipRectCoordinate;
         var isInXrange = false;
         var isInYrange = false;
+
 
         if (startX >= clipRectCoordinate.offsetX && startX <= clipRectCoordinate.offsetX + clipRectCoordinate.width) {
             isInXrange = true;
         }
 
         if (startY >= clipRectCoordinate.offsetY && startY <= clipRectCoordinate.offsetY + clipRectCoordinate.height) {
-            isInXrange = true;
+            isInYrange = true;
         }
 
         return isInXrange && isInYrange;
@@ -46,10 +51,11 @@
     function isTouchOnClipRec() {
         var isTouchOnClipRec = false;
         var clipRectCoordinate = shawn.config.clipRectCoordinate;
-
+        var isOnXrange = startX === clipRectCoordinate.offsetX || startX === clipRectCoordinate.offsetX + clipRectCoordinate.width;
+        var isOnYrange = startY === clipRectCoordinate.offsetY || startY === clipRectCoordinate.offsetY + clipRectCoordinate.height;
         return {
-            isOnXrange:  startX === clipRectCoordinate.offsetX || startX === clipRectCoordinate.offsetX + clipRectCoordinate.width,
-            isOnYrange:  startY === clipRectCoordinate.offsetY || startY === clipRectCoordinate.offsetY + clipRectCoordinate.height,
+            isOnXrange:  isOnXrange,
+            isOnYrange:  isOnYrange,
             isOnClipRec: isOnXrange || isOnYrange
         }
     }
@@ -69,11 +75,12 @@
         var dx = mouseX - startX;
         var dy = mouseY - startY;
 
-        var dragOffsetx；
+        var dragOffsetX;
         var dragOffsetY;
+
         if (isTouchInClipRec()) {
-            dragOffsetX = shawn.clipRectCoordinate.offsetX;
-            dragOffsetY = shawn.clipRectCoordinate.offsetY;
+            dragOffsetX = shawn.config.clipRectCoordinate.offsetX;
+            dragOffsetY = shawn.config.clipRectCoordinate.offsetY;
         } else {
             dragOffsetX = dragConfig.imageX;
             dragOffsetY = dragConfig.imageY;
@@ -104,12 +111,12 @@
         // redraw the image with border
         if (isTouchInClipRec()) {
             if (isTouchOnClipRec().isOnClipRec) {
-                shawn.clipRectCoordinate.width += (dragOffsetX - shawn.clipRectCoordinate.offsetX);
-                shawn.clipRectCoordinate.height += (dragOffsetY - shawn.clipRectCoordinate.offsetY);
+                shawn.config.clipRectCoordinate.width += (dragOffsetX - shawn.config.clipRectCoordinate.offsetX);
+                shawn.config.clipRectCoordinate.height += (dragOffsetY - shawn.config.clipRectCoordinate.offsetY);
             }
 
-            shawn.clipRectCoordinate.offsetX = dragOffsetX;
-            shawn.clipRectCoordinate.offsetY = dragOffsetY;
+            shawn.config.clipRectCoordinate.offsetX = dragOffsetX;
+            shawn.config.clipRectCoordinate.offsetY = dragOffsetY;
 
         } else {
             dragConfig.imageX = dragOffsetX;
@@ -117,8 +124,11 @@
         }
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        shawn.drawClipRect();
+
         shawn.draw();
+        if (shawn.config.isClip) {
+            shawn.drawClipRect();
+        }
     }
 
 }())

@@ -9,7 +9,6 @@
         var clipRectCoordinate = shawn.config.clipRectCoordinate;
 
         ctx.save();
-
         // draw the rect which useed to clip the image
         ctx.beginPath();
         ctx.strokeStyle = "red";
